@@ -120,7 +120,6 @@ RCT_EXPORT_METHOD(openVideoPicker:(NSDictionary *)options callback:(RCTResponseS
     BOOL allowPickingOriginalPhoto = [options sy_boolForKey:@"allowPickingOriginalPhoto"];
     BOOL sortAscendingByModificationDate = [options sy_boolForKey:@"sortAscendingByModificationDate"];
     BOOL showSelectedIndex = [options sy_boolForKey:@"showSelectedIndex"];
-
     NSInteger CropW      = [options sy_integerForKey:@"CropW"];
     NSInteger CropH      = [options sy_integerForKey:@"CropH"];
     NSInteger circleCropRadius = [options sy_integerForKey:@"circleCropRadius"];
@@ -144,6 +143,7 @@ RCT_EXPORT_METHOD(openVideoPicker:(NSDictionary *)options callback:(RCTResponseS
     imagePickerVc.autoDismiss = NO;
     imagePickerVc.showSelectedIndex = showSelectedIndex;
     imagePickerVc.modalPresentationStyle = UIModalPresentationFullScreen;
+    imagePickerVc.showSelectBtn = NO;
 
     if (isRecordSelected) {
         imagePickerVc.selectedAssets = self.selectedAssets; // 当前已选中的图片
@@ -216,6 +216,45 @@ RCT_EXPORT_METHOD(openVideoPicker:(NSDictionary *)options callback:(RCTResponseS
     BOOL sortAscendingByModificationDate = [self.cameraOptions sy_boolForKey:@"sortAscendingByModificationDate"];
     BOOL showSelectedIndex = [self.cameraOptions sy_boolForKey:@"showSelectedIndex"];
     BOOL allowPreview = [self.cameraOptions sy_boolForKey:@"allowPreview"];
+    NSString* color = [self.cameraOptions objectForKey:@"iconThemeColor"];
+    UIColor* iconThemeColor = nil;
+    UIColor* cannotSelectLayerColor = nil;
+    if (color != nil){
+        unsigned rgbValue = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:color];
+        [scanner setScanLocation:1]; // bypass '#' character
+        [scanner scanHexInt:&rgbValue];
+
+        iconThemeColor = [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+        cannotSelectLayerColor = iconThemeColor;
+    }
+    UIColor *oKButtonTitleColorNormal = nil;
+    UIColor *oKButtonTitleColorDisabled = nil;
+    UIColor *naviBgColor = nil;
+    UIColor *naviTitleColor = nil;
+    UIColor *barItemTextColor = nil;
+    color = [self.cameraOptions objectForKey:@"textColor"];
+    if(color != nil){
+        unsigned rgbValue = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:color];
+        [scanner setScanLocation:1]; // bypass '#' character
+        [scanner scanHexInt:&rgbValue];
+
+        oKButtonTitleColorNormal = [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+        oKButtonTitleColorDisabled = oKButtonTitleColorNormal;
+        naviTitleColor = oKButtonTitleColorNormal;
+        barItemTextColor = oKButtonTitleColorDisabled;
+    }
+    color = [self.cameraOptions objectForKey:@"titleBackgroundColor"];
+    if(color != nil){
+        unsigned rgbValue = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:color];
+        [scanner setScanLocation:1]; // bypass '#' character
+        [scanner scanHexInt:&rgbValue];
+
+        naviBgColor = [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+    }
+
     NSInteger CropW      = [self.cameraOptions sy_integerForKey:@"CropW"];
     NSInteger CropH      = [self.cameraOptions sy_integerForKey:@"CropH"];
     NSInteger circleCropRadius = [self.cameraOptions sy_integerForKey:@"circleCropRadius"];
@@ -235,7 +274,21 @@ RCT_EXPORT_METHOD(openVideoPicker:(NSDictionary *)options callback:(RCTResponseS
     imagePickerVc.allowCrop = isCrop;   // 裁剪
     imagePickerVc.modalPresentationStyle = UIModalPresentationFullScreen;
     imagePickerVc.allowPreview = allowPreview;
-
+    // imagePickerVc.iconThemeColor = iconThemeColor;
+    imagePickerVc.oKButtonTitleColorDisabled = oKButtonTitleColorDisabled;
+    imagePickerVc.oKButtonTitleColorNormal = oKButtonTitleColorNormal;
+    imagePickerVc.naviBgColor = naviBgColor;
+    imagePickerVc.naviTitleColor = naviTitleColor;
+    imagePickerVc.barItemTextColor = barItemTextColor;
+    imagePickerVc.doneBtnTitleStr = @"완료";
+    imagePickerVc.cancelBtnTitleStr = @"취소";
+    imagePickerVc.previewBtnTitleStr = @"미리보기";
+    imagePickerVc.fullImageBtnTitleStr = @"전체";
+    imagePickerVc.settingBtnTitleStr = @"설정";
+    imagePickerVc.processHintStr = @"실행 중...";
+    imagePickerVc.statusBarStyle = UIStatusBarStyleDarkContent;
+    imagePickerVc.showSelectBtn = NO;
+    
     if (isRecordSelected) {
         imagePickerVc.selectedAssets = self.selectedAssets; // 当前已选中的图片
     }

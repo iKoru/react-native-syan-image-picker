@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -27,6 +28,7 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.SdkVersionUtils;
+import com.luck.picture.lib.style.PictureParameterStyle;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -144,6 +146,41 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
         this.openVideoPicker();
     }
 
+    private PictureParameterStyle getStyle(ReadableMap options){
+        PictureParameterStyle pictureStyle = new PictureParameterStyle();
+        pictureStyle.pictureCheckedStyle = R.drawable.picture_selector;
+        pictureStyle.folderTextColor=Color.parseColor(options.getString("textColor"));
+
+        //bottom style
+        pictureStyle.pictureCompleteText = options.getString("doneTitle");
+        pictureStyle.pictureUnCompleteText = options.getString("undoneTitle");
+        pictureStyle.pictureRightDefaultText = options.getString("cancelTitle");
+        pictureStyle.pictureRightDefaultTextColor = Color.parseColor(options.getString("textColor"));
+        pictureStyle.isOpenCheckNumStyle = true;
+        pictureStyle.isCompleteReplaceNum = true;
+        pictureStyle.pictureCompleteTextSize = 16;
+        pictureStyle.pictureCheckNumBgStyle = R.drawable.num_oval_orange;
+        pictureStyle.pictureCompleteTextColor = Color.parseColor(options.getString("textColor"));
+        //preview Style
+        pictureStyle.picturePreviewBottomBgColor = Color.BLACK;
+        pictureStyle.pictureUnPreviewTextColor = Color.WHITE;
+        //header
+        pictureStyle.pictureTitleDownResId = R.drawable.camera_roll_down;
+        pictureStyle.pictureTitleUpResId= R.drawable.camera_roll_up;
+        pictureStyle.pictureTitleRightArrowLeftPadding = 10;
+        pictureStyle.pictureLeftBackIcon = R.drawable.btn_navi_back;
+        pictureStyle.pictureBottomBgColor= Color.WHITE;
+        pictureStyle.pictureNavBarColor = Color.parseColor(options.getString("selectedColor"));
+        pictureStyle.pictureStatusBarColor = Color.WHITE;
+        pictureStyle.pictureTitleTextColor = Color.parseColor(options.getString("textColor"));
+        pictureStyle.pictureOriginalFontColor = Color.parseColor(options.getString("textColor"));
+        pictureStyle.pictureRightDefaultTextColor = Color.parseColor(options.getString("textColor"));
+        pictureStyle.pictureRightSelectedTextColor =  Color.parseColor(options.getString("textColor"));
+        pictureStyle.pictureTitleBarBackgroundColor = Color.WHITE;
+        pictureStyle.isChangeStatusBarFontColor = true;
+        pictureStyle.pictureUnCompleteTextColor = Color.parseColor(options.getString("textColor"));
+        return pictureStyle;
+    }
     /**
      * 打开相册选择
      */
@@ -166,6 +203,8 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
         boolean isWeChatStyle = this.cameraOptions.getBoolean("isWeChatStyle");
         boolean showSelectedIndex = this.cameraOptions.getBoolean("showSelectedIndex");
         boolean compressFocusAlpha = this.cameraOptions.getBoolean("compressFocusAlpha");
+        boolean allowPreview = this.cameraOptions.getBoolean("allowPreview");
+        PictureParameterStyle mPictureParameterStyle=  getStyle(this.cameraOptions);
 
         int modeValue;
         if (imageCount == 1) {
@@ -184,17 +223,15 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
                 .minSelectNum(0)// 最小选择数量 int
                 .imageSpanCount(4)// 每行显示个数 int
                 .selectionMode(modeValue)// 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
-                .previewImage(true)// 是否可预览图片 true or false
-                .previewVideo(false)// 是否可预览视频 true or false
+                .previewImage(allowPreview)// 是否可预览图片 true or false
+                .previewVideo(allowPreview)// 是否可预览视频 true or false
                 .enablePreviewAudio(false) // 是否可播放音频 true or false
                 .isCamera(isCamera)// 是否显示拍照按钮 true or false
-                .imageFormat(isAndroidQ ? PictureMimeType.PNG_Q : PictureMimeType.PNG)// 拍照保存图片格式后缀,默认jpeg
                 .isZoomAnim(true)// 图片列表点击 缩放效果 默认true
                 .sizeMultiplier(0.5f)// glide 加载图片大小 0~1之间 如设置 .glideOverride()无效
                 .enableCrop(isCrop)// 是否裁剪 true or false
                 .compress(compress)// 是否压缩 true or false
                 .glideOverride(160, 160)// int glide 加载宽高，越小图片列表越流畅，但会影响列表图片浏览的清晰度
-                .withAspectRatio(CropW, CropH)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
                 .hideBottomControls(isCrop)// 是否显示uCrop工具栏，默认不显示 true or false
                 .isGif(isGif)// 是否显示gif图片 true or false
                 .freeStyleCropEnabled(freeStyleCropEnabled)// 裁剪框是否可拖拽 true or false
@@ -209,8 +246,9 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
                 .scaleEnabled(scaleEnabled)// 裁剪是否可放大缩小图片 true or false
                 .selectionMedia(selectList) // 当前已选中的图片 List
                 .isWeChatStyle(isWeChatStyle)
-                .theme(showSelectedIndex ? R.style.picture_WeChat_style : 0)
-                .compressFocusAlpha(compressFocusAlpha)
+                //.theme(showSelectedIndex ? R.style.picture_WeChat_style : 0)
+                //.compressFocusAlpha(compressFocusAlpha)
+                .setPictureStyle(mPictureParameterStyle)
                 .forResult(PictureConfig.CHOOSE_REQUEST); //结果回调onActivityResult code
     }
 
@@ -240,26 +278,26 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
         PictureSelector.create(currentActivity)
                 .openCamera(PictureMimeType.ofImage())
                 .loadImageEngine(GlideEngine.createGlideEngine())
-                .imageFormat(isAndroidQ ? PictureMimeType.PNG_Q : PictureMimeType.PNG)// 拍照保存图片格式后缀,默认jpeg
-                .enableCrop(isCrop)// 是否裁剪 true or false
-                .compress(compress)// 是否压缩 true or false
-                .glideOverride(160, 160)// int glide 加载宽高，越小图片列表越流畅，但会影响列表图片浏览的清晰度
-                .withAspectRatio(CropW, CropH)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
-                .hideBottomControls(isCrop)// 是否显示uCrop工具栏，默认不显示 true or false
-                .freeStyleCropEnabled(freeStyleCropEnabled)// 裁剪框是否可拖拽 true or false
-                .circleDimmedLayer(showCropCircle)// 是否圆形裁剪 true or false
-                .showCropFrame(showCropFrame)// 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
-                .showCropGrid(showCropGrid)// 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
-                .openClickSound(false)// 是否开启点击声音 true or false
-                .cropCompressQuality(quality)// 裁剪压缩质量 默认90 int
-                .minimumCompressSize(minimumCompressSize)// 小于100kb的图片不压缩
-                .synOrAsy(true)//同步true或异步false 压缩 默认同步
-                .rotateEnabled(rotateEnabled) // 裁剪是否可旋转图片 true or false
-                .scaleEnabled(scaleEnabled)// 裁剪是否可放大缩小图片 true or false
-                .isWeChatStyle(isWeChatStyle)
-                .theme(showSelectedIndex ? R.style.picture_WeChat_style : 0)
-                .compressFocusAlpha(compressFocusAlpha)
-                .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+//                .imageFormat(isAndroidQ ? PictureMimeType.PNG_Q : PictureMimeType.PNG)// 拍照保存图片格式后缀,默认jpeg
+//                .enableCrop(isCrop)// 是否裁剪 true or false
+//                .compress(compress)// 是否压缩 true or false
+//                .glideOverride(160, 160)// int glide 加载宽高，越小图片列表越流畅，但会影响列表图片浏览的清晰度
+//                .withAspectRatio(CropW, CropH)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+//                .hideBottomControls(isCrop)// 是否显示uCrop工具栏，默认不显示 true or false
+//                .freeStyleCropEnabled(freeStyleCropEnabled)// 裁剪框是否可拖拽 true or false
+//                .circleDimmedLayer(showCropCircle)// 是否圆形裁剪 true or false
+//                .showCropFrame(showCropFrame)// 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
+//                .showCropGrid(showCropGrid)// 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
+//                .openClickSound(false)// 是否开启点击声音 true or false
+//                .cropCompressQuality(quality)// 裁剪压缩质量 默认90 int
+//                .minimumCompressSize(minimumCompressSize)// 小于100kb的图片不压缩
+//                .synOrAsy(true)//同步true或异步false 压缩 默认同步
+//                .rotateEnabled(rotateEnabled) // 裁剪是否可旋转图片 true or false
+//                .scaleEnabled(scaCHOOSE_REQUESTleEnabled)// 裁剪是否可放大缩小图片 true or false
+//                .isWeChatStyle(isWeChatStyle)
+//                .theme(showSelectedIndex ? R.style.picture_WeChat_style : 0)
+//                .compressFocusAlpha(compressFocusAlpha)
+                .forResult(PictureConfig.REQUEST_CAMERA);//结果回调onActivityResult code
     }
 
     /**
@@ -323,16 +361,17 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
         @Override
         public void onActivityResult(Activity activity, int requestCode, int resultCode, final Intent data) {
             if (resultCode == -1) {
-                if (requestCode == PictureConfig.CHOOSE_REQUEST) {
+                if (requestCode == PictureConfig.CHOOSE_REQUEST || requestCode == PictureConfig.REQUEST_CAMERA) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             onGetResult(data);
                         }
                     }).run();
-                } else if (requestCode == PictureConfig.REQUEST_CAMERA) {
-                    onGetVideoResult(data);
                 }
+//                else if () {
+//                    onGetVideoResult(data);
+//                }
             } else {
                 invokeError(resultCode);
             }
@@ -397,11 +436,9 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
         WritableMap imageMap = new WritableNativeMap();
         String path = media.getPath();
 
-        if (media.isCompressed() || media.isCut()) {
+        if (media.isCompressed()) {
             path = media.getCompressPath();
-        }
-
-        if (media.isCut()) {
+        }else if (media.isCut()) {
             path = media.getCutPath();
         }
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -410,9 +447,12 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
         imageMap.putDouble("width", options.outWidth);
         imageMap.putDouble("height", options.outHeight);
         imageMap.putString("type", "image");
-        imageMap.putString("uri", "file://" + path);
-        imageMap.putString("original_uri", "file://" + media.getPath());
+        imageMap.putString("uri", "file://"+path);
+        imageMap.putString("uri_path", "file://"+media.getPath());
+        imageMap.putString("original_uri", "file://"+media.getRealPath());
         imageMap.putInt("size", (int) new File(path).length());
+        imageMap.putString("filename", media.getFileName());
+        imageMap.putString("mime", media.getMimeType());
 
         if (enableBase64) {
             String encodeString = getBase64StringFromFile(path);
