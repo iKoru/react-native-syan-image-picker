@@ -274,13 +274,14 @@ RCT_EXPORT_METHOD(openVideoPicker:(NSDictionary *)options callback:(RCTResponseS
     imagePickerVc.allowCrop = isCrop;   // 裁剪
     imagePickerVc.modalPresentationStyle = UIModalPresentationFullScreen;
     imagePickerVc.allowPreview = allowPreview;
+    imagePickerVc.allowCameraLocation = NO;
     // imagePickerVc.iconThemeColor = iconThemeColor;
     imagePickerVc.oKButtonTitleColorDisabled = oKButtonTitleColorDisabled;
     imagePickerVc.oKButtonTitleColorNormal = oKButtonTitleColorNormal;
     imagePickerVc.naviBgColor = naviBgColor;
     imagePickerVc.naviTitleColor = naviTitleColor;
     imagePickerVc.barItemTextColor = barItemTextColor;
-    imagePickerVc.doneBtnTitleStr = @"완료";
+    imagePickerVc.doneBtnTitleStr = @"다음";
     imagePickerVc.cancelBtnTitleStr = @"취소";
     imagePickerVc.previewBtnTitleStr = @"미리보기";
     imagePickerVc.fullImageBtnTitleStr = @"전체";
