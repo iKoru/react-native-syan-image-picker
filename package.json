@@ -1,6 +1,6 @@
 {
   "name": "react-native-syan-image-picker",
-  "version": "0.4.11",
+  "version": "0.5.3",
   "description": "React-Native 多图片选择 支持裁剪 压缩",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -8,11 +8,16 @@
   "files": [
     "src",
     "ios",
-    "android"
+    "android",
+    "RNSyanImagePicker.podspec",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "pu": "npm publish"
+    "pu": "npm publish",
+    "release": "release-it"
   },
   "keywords": [
     "react-native",
@@ -27,7 +32,7 @@
   "license": "MIT",
   "devDependencies": {
     "@release-it/conventional-changelog": "^2.0.1",
-    "release-it": "^14.5.1"
+    "release-it": "^14.11.6"
   },
   "release-it": {
     "git": {
