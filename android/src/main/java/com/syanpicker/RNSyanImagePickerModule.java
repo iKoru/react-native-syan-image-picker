@@ -213,7 +213,7 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
             modeValue = 2;
         }
 
-        Boolean isAndroidQ = SdkVersionUtils.checkedAndroid_Q();
+        Boolean isAndroidQ = SdkVersionUtils.isQ();
 
         Activity currentActivity = getCurrentActivity();
         PictureSelector.create(currentActivity)
@@ -272,7 +272,7 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
         boolean showSelectedIndex = this.cameraOptions.getBoolean("showSelectedIndex");
         boolean compressFocusAlpha = this.cameraOptions.getBoolean("compressFocusAlpha");
 
-        Boolean isAndroidQ = SdkVersionUtils.checkedAndroid_Q();
+        Boolean isAndroidQ = SdkVersionUtils.isQ();
 
         Activity currentActivity = getCurrentActivity();
         PictureSelector.create(currentActivity)
@@ -395,8 +395,8 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
 
                 WritableMap videoMap = new WritableNativeMap();
 
-                Boolean isAndroidQ = SdkVersionUtils.checkedAndroid_Q();
-                Boolean isAndroidR = SdkVersionUtils.checkedAndroid_R();
+                Boolean isAndroidQ = SdkVersionUtils.isQ();
+                Boolean isAndroidR = SdkVersionUtils.isR();
                 String filePath = media.getPath();
                 if (isAndroidQ){
                    filePath = media.getAndroidQToPath();
